@@ -1,0 +1,22 @@
+/* Styling for the container holding the file input and button */
+.top-right-container {
+    position: absolute; /* Position relative to the page */
+    top: 20px; /* Distance from the top of the page */
+    right: 20px; /* Distance from the right side of the page */
+    display: flex; /* Flexbox for vertical alignment */
+    flex-direction: column; /* Stack children vertically */
+    align-items: flex-end; /* Align children to the right */
+    gap: 10px; /* Space between the file input and button */
+  }
+  .center-text {
+    text-align: center;
+    display: flex;
+    justify-content: center; /* Center horizontally */
+    align-items: center;    /* Center vertically */
+    height: 70vh;    
+  }
+  
+  .file-input {
+    cursor: pointer; /* Pointer cursor for the file input */
+  }
+  

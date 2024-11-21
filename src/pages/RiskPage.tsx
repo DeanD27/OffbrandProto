@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonButton, IonInput } from '@ionic/react';
+import './RiskPage.css';
 
 const RiskAssessment: React.FC = () => {
   const [file, setFile] = useState<File | null>(null);
@@ -43,12 +44,23 @@ const RiskAssessment: React.FC = () => {
         </IonToolbar>
       </IonHeader>
       <IonContent className="ion-padding">
-        <h2>Upload CSV for Risk Assessment</h2>
-        <input type="file" accept=".csv" onChange={handleFileChange} />
-        <IonButton expand="block" onClick={handleUpload}>
-          Generate Risk Assessment
-        </IonButton>
-        {assessment && <p>Risk Assessment: {assessment}</p>}
+        <div className="top-right-container">
+        <h5 className="instruction-text">
+            Upload your internal risk data to generate a detailed risk assessment output.
+          </h5>
+          <input
+            type="file"
+            accept=".csv"
+            onChange={handleFileChange}
+            className="file-input"
+          />
+          <IonButton onClick={handleUpload}>
+            Generate Risk Assessment
+          </IonButton>
+        </div>
+        <div className="center-text">
+          {assessment && <p>Risk Assessment: {assessment}</p>}
+        </div>
       </IonContent>
     </IonPage>
   );

@@ -1,8 +1,10 @@
 from flask import Flask, request, jsonify
+from flask_cors import CORS
 import pandas as pd
 import joblib  # For loading ML models
 
 app = Flask(__name__)
+CORS(app)
 # model = joblib.load("path/to/your_model.pkl")
 
 @app.route('/analyze', methods=['POST'])

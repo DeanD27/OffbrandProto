@@ -16,7 +16,6 @@ const RiskAssessment: React.FC = () => {
       alert('Please upload a file first.');
       return;
     }
-
     // Read the file content
     const reader = new FileReader();
     reader.onload = async (event) => {

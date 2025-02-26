@@ -9,7 +9,7 @@ CORS(app)
 
 @app.route('/analyze', methods=['POST'])
 def analyze():
-    data = request.json
+    data = request.json 
     csv_content = data.get('csv', '')
     if not csv_content:
         return jsonify({'error': 'No CSV content provided'}), 400
@@ -23,7 +23,7 @@ def analyze():
 #    risk_assessment = predictions.tolist()
 
 #    return jsonify({'result': risk_assessment})
-    return jsonify({'result': 'frontend and backend are talking'})
+    return jsonify({'result': 'PDF file received, backend sending response'})
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=5000)

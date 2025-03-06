@@ -47,9 +47,16 @@ const RiskAssessment: React.FC = () => {
     setAnswers((prev) => ({ ...prev, [questionId]: value }));
   };
 
-  const handleSubmit = () => {
-    console.log('Submitted Answers:', answers);
-    alert('Your responses have been recorded.');
+  const handleSubmit = async () => {
+    console.log(answers)
+    const response = await fetch("http://127.0.0.1:5000/analyze", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ responses: answers }), // Send responses to backend
+    });
+  
+    const data = await response.json();
+    setAssessment(data.risk_analysis); // Display AI-generated risk summary
   };
   return (
     <IonPage>

@@ -4,7 +4,8 @@ import pandas as pd
 import requests
 
 app = Flask(__name__)
-CORS(app)
+CORS(app, resources={r"/*": {"origins": "*", "methods": ["GET", "POST", "OPTIONS"], "allow_headers": ["Content-Type"]}})
+
 
 OLLAMA_URL = "http://localhost:11434/api/generate"
 
@@ -12,15 +13,7 @@ OLLAMA_URL = "http://localhost:11434/api/generate"
 def analyze():
     data = request.json 
     user_responses = data["responses"]
-    """
-    csv_content = data.get('csv', '')
-    if not csv_content:
-        return jsonify({'error': 'No CSV content provided'}), 400
 
-    # Process CSV content
-    from io import StringIO
-    csv_data = pd.read_csv(StringIO(csv_content))
-    """
     prompt = f"""
     You are a risk assessment AI. Based on the user's responses, generate a risk assessment.
     
@@ -38,12 +31,7 @@ def analyze():
 
     result = response.json()["response"] 
     
-    # Generate prediction
-#    predictions = model.predict(csv_data)
-#    risk_assessment = predictions.tolist()
-
-#    return jsonify({'result': risk_assessment})
-#    return jsonify({'result': 'PDF file received, backend sending response'})
+    # generate prediction
     return jsonify({"risk_analysis": result})
 
 if __name__ == '__main__':

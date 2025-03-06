@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { 
-  IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonButton, IonSelect, 
+  IonCard, IonCardContent, IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonButton, IonSelect, 
   IonSelectOption, IonItem, IonLabel, IonList, IonCheckbox, IonRadioGroup, IonRadio } from '@ionic/react';
 import './RiskPage.css';
 
@@ -56,6 +56,7 @@ const RiskAssessment: React.FC = () => {
     });
   
     const data = await response.json();
+    console.log(data)
     setAssessment(data.risk_analysis); // Display AI-generated risk summary
   };
   return (
@@ -207,6 +208,15 @@ const RiskAssessment: React.FC = () => {
 
         {/* Submit Button */}
         <IonButton expand="full" onClick={handleSubmit}>Submit Responses</IonButton>
+
+        {assessment && (
+          <IonCard className="assessment-card">
+            <IonCardContent>
+              <h2>Risk Assessment Result:</h2>
+              <p>{assessment}</p> {/* ✅ Display AI-generated risk summary */}
+            </IonCardContent>
+          </IonCard>
+        )}
 
       </IonContent>
     </IonPage>

@@ -8,9 +8,16 @@ import {
   IonIcon
 } from '@ionic/react';
 import './Home.css';
-import { logInOutline } from 'ionicons/icons';
+import { documentTextOutline } from 'ionicons/icons';
+import { useHistory } from 'react-router-dom';
 
 const Tab1: React.FC = () => {
+  const history = useHistory();
+
+  const goToQuestionnaire = () => {
+    history.push('/RiskPage'); // <-- this is your questionnaire route
+  };
+
   return (
     <IonPage>
       <IonHeader>
@@ -26,14 +33,9 @@ const Tab1: React.FC = () => {
             Offbrand uses AI models like Mistral and Gemma to analyze business risks across
             finance, compliance, cybersecurity, HR, and more — tailored for small & medium enterprises.
           </p>
-          <IonButton
-            color="primary"
-            href="/viz"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <IonIcon icon={logInOutline} slot="start" />
-            View LLM Log Dashboard
+          <IonButton color="primary" onClick={goToQuestionnaire}>
+            <IonIcon icon={documentTextOutline} slot="start" />
+            Start Questionnaire
           </IonButton>
         </div>
       </IonContent>
@@ -42,4 +44,5 @@ const Tab1: React.FC = () => {
 };
 
 export default Tab1;
+
 

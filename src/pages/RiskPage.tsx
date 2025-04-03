@@ -1,8 +1,9 @@
+
 import React, { useState } from 'react';
 import {
   IonCard, IonCardContent, IonPage, IonHeader, IonToolbar, IonTitle,
   IonContent, IonButton, IonSelect, IonSelectOption, IonItem, IonLabel,
-  IonList, IonCheckbox, IonRadioGroup, IonRadio, IonSpinner
+  IonList, IonCheckbox, IonRadioGroup, IonRadio, IonSpinner, IonInput
 } from '@ionic/react';
 import './RiskPage.css';
 
@@ -32,8 +33,6 @@ const RiskAssessment: React.FC = () => {
       });
 
       const data = await response.json();
-      console.log("Backend response:", data);
-
       setMistralAssessment(data.mistral_analysis);
       setGemmaJudgment(data.gemma_judgment);
     } catch (error) {
@@ -43,6 +42,26 @@ const RiskAssessment: React.FC = () => {
       setLoading(false);
     }
   };
+
+  const checkboxList = (options: string[], answerKey: string) =>
+    options.map(option => (
+      <IonItem key={option}>
+        <IonLabel>{option}</IonLabel>
+        <IonCheckbox
+          slot="start"
+          checked={answers[answerKey]?.includes(option)}
+          onIonChange={(e) => {
+            const selected = answers[answerKey] || [];
+            handleAnswerChange(
+              answerKey,
+              e.detail.checked
+                ? [...selected, option]
+                : selected.filter((item: string) => item !== option)
+            );
+          }}
+        />
+      </IonItem>
+    ));
 
   return (
     <IonPage>
@@ -54,7 +73,7 @@ const RiskAssessment: React.FC = () => {
 
       <IonContent className="ion-padding">
         <IonList>
-          {/* Industry */}
+          {/* Section 1: Organization Profile */}
           <IonItem>
             <IonLabel>Primary Industry</IonLabel>
             <IonSelect placeholder="Select Industry" onIonChange={(e) => handleAnswerChange('industry', e.detail.value)}>
@@ -64,7 +83,6 @@ const RiskAssessment: React.FC = () => {
             </IonSelect>
           </IonItem>
 
-          {/* Headquarters */}
           <IonItem>
             <IonLabel>Headquarters Country</IonLabel>
             <IonSelect placeholder="Select Country" onIonChange={(e) => handleAnswerChange('headquarters', e.detail.value)}>
@@ -74,27 +92,9 @@ const RiskAssessment: React.FC = () => {
             </IonSelect>
           </IonItem>
 
-          {/* Operating Countries */}
           <IonItem><IonLabel>Operating Countries</IonLabel></IonItem>
-          {countries.map(country => (
-            <IonItem key={country}>
-              <IonLabel>{country}</IonLabel>
-              <IonCheckbox
-                slot="start"
-                onIonChange={(e) => {
-                  const selected = answers.operatingCountries || [];
-                  handleAnswerChange(
-                    'operatingCountries',
-                    e.detail.checked
-                      ? [...selected, country]
-                      : selected.filter((c: string) => c !== country)
-                  );
-                }}
-              />
-            </IonItem>
-          ))}
+          {checkboxList(countries, 'operatingCountries')}
 
-          {/* Employee Size */}
           <IonItem><IonLabel>Employee Size</IonLabel></IonItem>
           <IonRadioGroup onIonChange={(e) => handleAnswerChange('employeeSize', e.detail.value)}>
             {['Less than 50', '50–250', '250–1000', 'More than 1000'].map(size => (
@@ -105,34 +105,50 @@ const RiskAssessment: React.FC = () => {
             ))}
           </IonRadioGroup>
 
-          {/* Yes/No Questions */}
-          {[
-            { id: 'highRiskRegion', text: 'Operate in high-risk regions for corruption?' },
-            { id: 'thirdPartyRisk', text: 'Engage with third parties in risky areas?' },
-            { id: 'dataMonitoring', text: 'Have data privacy monitoring processes?' },
-            { id: 'leaderTraining', text: 'Do leaders get ethics training?' }
-          ].map(q => (
-            <IonItem key={q.id}>
-              <IonLabel>{q.text}</IonLabel>
-              <IonRadioGroup onIonChange={(e) => handleAnswerChange(q.id, e.detail.value)}>
-                <IonItem><IonLabel>Yes</IonLabel><IonRadio slot="start" value="Yes" /></IonItem>
-                <IonItem><IonLabel>No</IonLabel><IonRadio slot="start" value="No" /></IonItem>
-              </IonRadioGroup>
-            </IonItem>
-          ))}
-
-          {/* Sanctions Risk */}
-          <IonItem><IonLabel>Exposure to sanctions risk?</IonLabel></IonItem>
-          <IonRadioGroup onIonChange={(e) => handleAnswerChange('sanctionsRisk', e.detail.value)}>
-            {['Yes', 'No', 'Not Sure'].map(option => (
-              <IonItem key={option}>
-                <IonLabel>{option}</IonLabel>
-                <IonRadio slot="start" value={option} />
+          <IonItem><IonLabel>Annual Revenue</IonLabel></IonItem>
+          <IonRadioGroup onIonChange={(e) => handleAnswerChange('annualRevenue', e.detail.value)}>
+            {['Less than $10 million', '$10–50 million', '$50–500 million', 'More than $500 million'].map(rev => (
+              <IonItem key={rev}>
+                <IonLabel>{rev}</IonLabel>
+                <IonRadio slot="start" value={rev} />
               </IonItem>
             ))}
           </IonRadioGroup>
 
-          {/* ESG Confidence */}
+          <IonItem><IonLabel>Motivation for Assessment</IonLabel></IonItem>
+          {checkboxList([
+            'Requirement from a joint venture partner',
+            'Recent ethics and compliance event',
+            'Requirement from the board',
+            'Motivated by recent scandals or headlines',
+            'Other'
+          ], 'assessmentMotivation')}
+
+          {answers.assessmentMotivation?.includes('Other') && (
+            <IonItem>
+              <IonLabel position="stacked">Please specify</IonLabel>
+              <IonInput onIonChange={(e) => handleAnswerChange('assessmentMotivationOther', e.detail.value!)} />
+            </IonItem>
+          )}
+
+          {/* Section 2: Exposure to Risks */}
+          {[
+            ['highRiskRegion', 'Operate in high-risk regions for corruption?'],
+            ['thirdPartyRisk', 'Engage with third parties in risky areas?'],
+            ['sanctionsRisk', 'Exposure to sanctions risk?', ['Yes', 'No', 'Not Sure']],
+            ['dataMonitoring', 'Have data privacy monitoring processes?'],
+            ['modernSlaveryDueDiligence', 'Due diligence for modern slavery laws?']
+          ].map(([id, text, opts]) => (
+            <IonItem key={id}>
+              <IonLabel>{text}</IonLabel>
+              <IonRadioGroup onIonChange={(e) => handleAnswerChange(id, e.detail.value)}>
+                {(opts || ['Yes', 'No']).map(opt => (
+                  <IonItem key={opt}><IonLabel>{opt}</IonLabel><IonRadio slot="start" value={opt} /></IonItem>
+                ))}
+              </IonRadioGroup>
+            </IonItem>
+          ))}
+
           <IonItem><IonLabel>Confidence in ESG policies? (1–5)</IonLabel></IonItem>
           <IonRadioGroup onIonChange={(e) => handleAnswerChange('esgConfidence', e.detail.value)}>
             {[1, 2, 3, 4, 5].map(num => (
@@ -143,62 +159,62 @@ const RiskAssessment: React.FC = () => {
             ))}
           </IonRadioGroup>
 
-          {/* Code of Conduct Agreement */}
+          {/* Section 3: Ethics & Compliance */}
           <IonItem><IonLabel>Formal Code of Conduct?</IonLabel></IonItem>
           <IonRadioGroup onIonChange={(e) => handleAnswerChange('codeOfConduct', e.detail.value)}>
-            {['Strongly Agree', 'Agree', 'Neutral', 'Disagree', 'Strongly Disagree'].map(option => (
-              <IonItem key={option}>
-                <IonLabel>{option}</IonLabel>
-                <IonRadio slot="start" value={option} />
-              </IonItem>
+            {['Strongly Agree', 'Agree', 'Neutral', 'Disagree', 'Strongly Disagree'].map(opt => (
+              <IonItem key={opt}><IonLabel>{opt}</IonLabel><IonRadio slot="start" value={opt} /></IonItem>
             ))}
           </IonRadioGroup>
 
-          {/* Code Update Frequency */}
           <IonItem>
-            <IonLabel>Code of Conduct Update Frequency</IonLabel>
-            <IonSelect placeholder="Select Frequency" onIonChange={(e) => handleAnswerChange('codeUpdateFrequency', e.detail.value)}>
-              {['Annually', 'Bi-Annually', 'As Needed', 'Never'].map(option => (
-                <IonSelectOption key={option} value={option}>{option}</IonSelectOption>
+            <IonLabel>Code Update Frequency</IonLabel>
+            <IonSelect placeholder="Select" onIonChange={(e) => handleAnswerChange('codeUpdateFrequency', e.detail.value)}>
+              {['Annually', 'Bi-Annually', 'As Needed', 'Never'].map(opt => (
+                <IonSelectOption key={opt} value={opt}>{opt}</IonSelectOption>
               ))}
             </IonSelect>
           </IonItem>
 
-          {/* Training Frequency */}
           <IonItem>
             <IonLabel>Ethics Training Frequency</IonLabel>
-            <IonSelect placeholder="Select Frequency" onIonChange={(e) => handleAnswerChange('ethicsTraining', e.detail.value)}>
-              {['Annually', 'Bi-Annually', 'Less Frequently', 'Never'].map(option => (
-                <IonSelectOption key={option} value={option}>{option}</IonSelectOption>
+            <IonSelect placeholder="Select" onIonChange={(e) => handleAnswerChange('ethicsTraining', e.detail.value)}>
+              {['Annually', 'Bi-Annually', 'Less Frequently', 'Never'].map(opt => (
+                <IonSelectOption key={opt} value={opt}>{opt}</IonSelectOption>
               ))}
             </IonSelect>
           </IonItem>
+
+          <IonItem><IonLabel>Are senior leaders involved in training?</IonLabel></IonItem>
+          <IonRadioGroup onIonChange={(e) => handleAnswerChange('leaderTraining', e.detail.value)}>
+            {['Yes', 'No'].map(opt => (
+              <IonItem key={opt}><IonLabel>{opt}</IonLabel><IonRadio slot="start" value={opt} /></IonItem>
+            ))}
+          </IonRadioGroup>
+
+          {/* Submit */}
+          <IonButton expand="full" onClick={handleSubmit} disabled={loading}>
+            {loading ? <IonSpinner name="dots" /> : "Submit Responses"}
+          </IonButton>
+
+          {/* Outputs */}
+          {mistralAssessment && (
+            <IonCard className="assessment-card">
+              <IonCardContent>
+                <h2>Mistral Risk Analysis:</h2>
+                <p style={{ whiteSpace: 'pre-line' }}>{mistralAssessment}</p>
+              </IonCardContent>
+            </IonCard>
+          )}
+          {gemmaJudgment && (
+            <IonCard className="assessment-card">
+              <IonCardContent>
+                <h2>Gemma's Judgment:</h2>
+                <p style={{ whiteSpace: 'pre-line' }}>{gemmaJudgment}</p>
+              </IonCardContent>
+            </IonCard>
+          )}
         </IonList>
-
-        {/* Submit */}
-        <IonButton expand="full" onClick={handleSubmit} disabled={loading}>
-          {loading ? <IonSpinner name="dots" /> : "Submit Responses"}
-        </IonButton>
-
-        {/* Mistral Analysis Output */}
-        {mistralAssessment && (
-          <IonCard className="assessment-card">
-            <IonCardContent>
-              <h2>Mistral Risk Analysis:</h2>
-              <p style={{ whiteSpace: 'pre-line' }}>{mistralAssessment}</p>
-            </IonCardContent>
-          </IonCard>
-        )}
-
-        {/* Gemma Judgment Output */}
-        {gemmaJudgment && (
-          <IonCard className="assessment-card">
-            <IonCardContent>
-              <h2>Gemma's Judgment:</h2>
-              <p style={{ whiteSpace: 'pre-line' }}>{gemmaJudgment}</p>
-            </IonCardContent>
-          </IonCard>
-        )}
       </IonContent>
     </IonPage>
   );

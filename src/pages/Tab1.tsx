@@ -30,7 +30,7 @@ const Tab1: React.FC = () => {
         <div className="center-text">
           <h1>SME Risk Assessment</h1>
           <p>
-            Offbrand uses AI models like Mistral and Gemma to analyze business risks across
+            Offbrand uses AI models like Mistral to analyze business risks across
             finance, compliance, cybersecurity, HR, and more — tailored for small & medium enterprises.
           </p>
           <IonButton color="primary" onClick={goToQuestionnaire}>
